@@ -1,0 +1,24 @@
+# Connection manifest for the Orchestration Board — Codex CLI form.
+# Append this to ~/.codex/config.toml, fill in the three values, restart Codex.
+#
+# Codex spells the table `mcp_servers` (snake_case) where most other clients use `mcpServers`.
+# If your version rejects the key, check its own docs for the current name — the rest of the
+# shape is plain MCP stdio and does not change.
+#
+# Requires: python 3.10+, and `pip install mcp>=2.0`.
+# server.py is the file from the agent/ directory of this project. Give its ABSOLUTE path.
+
+[mcp_servers.orchestration-board]
+command = "python"
+args = ["/absolute/path/to/orchestration-board/agent/server.py"]
+
+[mcp_servers.orchestration-board.env]
+BOARD_URL = "http://192.168.1.10:8781"
+BOARD_TOKEN = "PASTE_THE_TOKEN_HERE"
+BOARD_NODE = "codex"
+
+# BOARD_NODE is this agent's identity on the board. Pick one name and keep it: it is fixed here
+# rather than passed per call, so the agent cannot post anonymously or under another node's name.
+#
+# BOARD_TOKEN is a password. Anyone holding it who can reach the port reads and writes the whole
+# board. config.toml is not a place to share; a leaked token is repaired only by rotating it.

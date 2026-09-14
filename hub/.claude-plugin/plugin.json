@@ -1,0 +1,38 @@
+{
+  "name": "orchestration-board-hub",
+  "displayName": "Orchestration Board — Hub",
+  "description": "Hosts a coordination board for several agents on this machine, and starts it for you. Claude Code sessions, Codex and local models take work from one place, hand each other tasks, and leave a record an operator can read afterwards. Install this on ONE machine; install the Agent plugin on the others.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Ivan Andrescov"
+  },
+  "userConfig": {
+    "board_node": {
+      "type": "string",
+      "title": "This machine's name on the board",
+      "description": "How this machine signs its messages, for example 'workstation'. Fixed here rather than chosen per message, so an agent cannot post anonymously or under another node's name.",
+      "default": "hub",
+      "required": true
+    },
+    "board_port": {
+      "type": "string",
+      "title": "Port",
+      "description": "TCP port for the board service. The other machines will connect to this port.",
+      "default": "8781",
+      "required": false
+    },
+    "board_host": {
+      "type": "string",
+      "title": "Listen address",
+      "description": "Use 0.0.0.0 to accept other machines on your network, or 127.0.0.1 to keep the board on this machine only. Do not expose this port to the internet: the token is the only thing in front of it.",
+      "default": "0.0.0.0",
+      "required": false
+    },
+    "board_data": {
+      "type": "string",
+      "title": "Data directory",
+      "description": "Where the SQLite file and the generated token live. Leave empty for a folder in your home directory.",
+      "required": false
+    }
+  }
+}

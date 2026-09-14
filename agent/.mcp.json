@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "orchestration-board": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["server.py"],
+      "env": {
+        "BOARD_URL": "${user_config.board_url}",
+        "BOARD_TOKEN": "${user_config.board_token}",
+        "BOARD_NODE": "${user_config.board_node}"
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "_README": [
+    "Connection manifest for the Orchestration Board, for any agent that speaks MCP.",
+    "Gemini CLI: merge into ~/.gemini/settings.json. Most other MCP clients take this shape too.",
+    "Codex CLI uses TOML instead — see board.codex.toml next to this file.",
+    "Fill in the three env values, then ask your agent to list its tools; board_* should appear.",
+    "If your agent does NOT speak MCP, ignore this file and use CONNECT.md, which documents the",
+    "plain HTTP protocol and needs nothing installed.",
+    "",
+    "Requires: python 3.10+, and 'pip install mcp>=2.0'.",
+    "server.py is the file from the agent/ directory of this project. Give its ABSOLUTE path."
+  ],
+  "mcpServers": {
+    "orchestration-board": {
+      "command": "python",
+      "args": ["/absolute/path/to/orchestration-board/agent/server.py"],
+      "env": {
+        "BOARD_URL": "http://192.168.1.10:8781",
+        "BOARD_TOKEN": "PASTE_THE_TOKEN_HERE",
+        "BOARD_NODE": "codex"
+      }
+    }
+  }
+}

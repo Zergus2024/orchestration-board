@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "orchestration-board-hub": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["server.py"],
+      "env": {
+        "BOARD_NODE": "${user_config.board_node}",
+        "BOARD_PORT": "${user_config.board_port}",
+        "BOARD_HOST": "${user_config.board_host}",
+        "BOARD_DATA": "${user_config.board_data}"
+      }
+    }
+  }
+}

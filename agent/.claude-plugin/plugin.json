@@ -1,0 +1,30 @@
+{
+  "name": "orchestration-board-agent",
+  "displayName": "Orchestration Board — Agent",
+  "description": "Joins a coordination board hosted on another machine. Take work, hand tasks to other agents, and leave a record an operator can read. Install the Hub plugin on the machine that hosts the board; install this everywhere else.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Ivan Andrescov"
+  },
+  "userConfig": {
+    "board_url": {
+      "type": "string",
+      "title": "Board URL",
+      "description": "Base URL of the board, for example http://192.168.1.10:8781 . The machine running the Hub plugin reports this.",
+      "required": true
+    },
+    "board_token": {
+      "type": "string",
+      "title": "Board token",
+      "description": "The token the board generated. Ask the hub machine for it with hub_token. Never commit it anywhere: a leaked token is not repaired by deleting a file, only by rotating the secret.",
+      "sensitive": true,
+      "required": true
+    },
+    "board_node": {
+      "type": "string",
+      "title": "This agent's name on the board",
+      "description": "How this agent signs its messages, for example 'laptop' or 'workstation'. Fixed here rather than passed per call, so an agent cannot post anonymously or under another node's name.",
+      "required": true
+    }
+  }
+}

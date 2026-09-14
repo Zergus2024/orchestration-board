@@ -1,0 +1,22 @@
+{
+  "name": "orchestration-board",
+  "owner": {
+    "name": "Ivan Andrescov"
+  },
+  "metadata": {
+    "description": "A shared coordination board for several agents: one machine hosts it, the others join.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "orchestration-board-hub",
+      "source": "./hub",
+      "description": "Hosts the board on this machine and starts it for you. Install on ONE machine."
+    },
+    {
+      "name": "orchestration-board-agent",
+      "source": "./agent",
+      "description": "Joins a board hosted elsewhere. Install on every other machine."
+    }
+  ]
+}
