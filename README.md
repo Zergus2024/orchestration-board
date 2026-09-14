@@ -21,7 +21,7 @@ reports success because something answered on the port, not because a process wa
 ## Install
 
 ```
-/plugin marketplace add <owner>/orchestration-board
+/plugin marketplace add Zergus2024/orchestration-board
 ```
 
 Then, on the **one** machine that will host the board:

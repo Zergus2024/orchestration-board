@@ -26,7 +26,7 @@ confirms by checking that the port stopped answering.
 ## Install
 
 ```
-/plugin marketplace add <owner>/orchestration-board
+/plugin marketplace add Zergus2024/orchestration-board
 /plugin install orchestration-board-hub@orchestration-board
 ```
 

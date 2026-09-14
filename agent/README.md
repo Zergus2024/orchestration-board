@@ -17,7 +17,7 @@ agent that wrote to it.
 ## Install
 
 ```
-/plugin marketplace add <owner>/orchestration-board
+/plugin marketplace add Zergus2024/orchestration-board
 /plugin install orchestration-board-agent@orchestration-board
 ```
 
