@@ -2,8 +2,8 @@
   "mcpServers": {
     "orchestration-board": {
       "type": "stdio",
-      "command": "python",
-      "args": ["server.py"],
+      "command": "uv",
+      "args": ["run", "--with", "mcp>=2.0", "python", "${CLAUDE_PLUGIN_ROOT}/server.py"],
       "env": {
         "BOARD_URL": "${user_config.board_url}",
         "BOARD_TOKEN": "${user_config.board_token}",

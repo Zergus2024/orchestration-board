@@ -29,7 +29,10 @@ Claude Code asks for three things:
 | **Board token** | ask the hub machine for it with `hub_token`; stored as a secret |
 | **This agent's name** | how this agent signs its messages, e.g. `laptop`. Fixed in configuration, not passed per call, so an agent cannot post anonymously or under another node's name. |
 
-Requires Python 3.10+ and the `mcp` package (`pip install -r requirements.txt`).
+**Requires [uv](https://docs.astral.sh/uv/)** — `winget install --id astral-sh.uv -e` on Windows,
+`curl -LsSf https://astral.sh/uv/install.sh | sh` elsewhere. It is the plugin's launcher: it finds
+a Python and installs `mcp` on first start. Claude Code does not read `requirements.txt`, and a
+plugin whose dependency is missing does not report an error — its server simply never starts.
 
 > **The token is a password.** Anyone who holds it and can reach the port can read and write
 > everything on the board. Never commit it: a leaked token is not repaired by deleting a file, only

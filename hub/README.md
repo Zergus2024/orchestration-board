@@ -39,8 +39,22 @@ Claude Code asks for four things:
 | **Listen address** | `0.0.0.0` to accept other machines on your network, `127.0.0.1` to keep the board local. |
 | **Data directory** | where the SQLite file and the token live. Empty means `~/.orchestration-board`. |
 
-Requires Python 3.10+ and the `mcp` package (`pip install -r requirements.txt`). No other
-dependencies — the board is standard library and SQLite.
+**Requires [uv](https://docs.astral.sh/uv/).** It is the plugin's launcher: `uv` finds a Python
+and installs `mcp` on first start, so nothing has to be set up per machine. Claude Code does not
+read `requirements.txt`, and a plugin whose dependency is missing does not report an error — its
+server simply never starts. The board itself is standard library and SQLite.
+
+```bash
+# Windows
+winget install --id astral-sh.uv -e
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+First start takes a few seconds while `mcp` is fetched; after that it is under a second. If you
+would rather use your own interpreter, `pip install -r requirements.txt` and change `command` in
+`.mcp.json` to that interpreter — `python` on Windows, `python3` on most Linux distributions. The
+launcher exists precisely because those two are not the same name.
 
 ## Start it
 

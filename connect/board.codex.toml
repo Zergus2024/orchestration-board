@@ -5,12 +5,18 @@
 # If your version rejects the key, check its own docs for the current name — the rest of the
 # shape is plain MCP stdio and does not change.
 #
-# Requires: python 3.10+, and `pip install mcp>=2.0`.
+# Requires uv (https://docs.astral.sh/uv/). It finds a Python and installs mcp on first start,
+# which is why the command is `uv` and not an interpreter name: there is no single name that
+# works everywhere — Windows installs `python`, most Linux distributions only `python3`.
+# Without uv, put your own interpreter in `command`, drop the leading args, and
+# `pip install "mcp>=2.0"` first.
+#
 # server.py is the file from the agent/ directory of this project. Give its ABSOLUTE path.
 
 [mcp_servers.orchestration-board]
-command = "python"
-args = ["/absolute/path/to/orchestration-board/agent/server.py"]
+command = "uv"
+args = ["run", "--with", "mcp>=2.0", "python",
+        "/absolute/path/to/orchestration-board/agent/server.py"]
 
 [mcp_servers.orchestration-board.env]
 BOARD_URL = "http://192.168.1.10:8781"
