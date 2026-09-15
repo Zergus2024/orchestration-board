@@ -31,10 +31,23 @@ import urllib.request
 from mcp.server.mcpserver import MCPServer
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.environ.get("BOARD_DATA", os.path.join(os.path.expanduser("~"), ".orchestration-board"))
-PORT = int(os.environ.get("BOARD_PORT", "8781"))
-HOST = os.environ.get("BOARD_HOST", "0.0.0.0")
-ME = os.environ.get("BOARD_NODE", "hub")
+
+
+def env(key, default):
+    """Absent and empty mean the same thing here.
+
+    A plugin setting the operator never filled in arrives as an empty string, not as an unset
+    variable, so os.environ.get(key, default) hands back "" and the default never applies.
+    int("") then kills the server during import — before any tool can report why, and where the
+    only symptom is a plugin that has no tools.
+    """
+    return os.environ.get(key, "").strip() or default
+
+
+DATA_DIR = env("BOARD_DATA", os.path.join(os.path.expanduser("~"), ".orchestration-board"))
+PORT = int(env("BOARD_PORT", "8781"))
+HOST = env("BOARD_HOST", "0.0.0.0")
+ME = env("BOARD_NODE", "hub")
 LOCAL = f"http://127.0.0.1:{PORT}"
 
 mcp = MCPServer(
@@ -58,13 +71,39 @@ def _token():
     return open(p, encoding="utf-8").read().strip() if os.path.exists(p) else ""
 
 
-def _alive(timeout=2.0):
-    """Answering, not merely spawned."""
+SERVICE = "orchestration-board"
+
+
+def _probe(timeout=2.0):
+    """What is on the port: (our board | something else | nothing).
+
+    "Something answered" is not "our board answered". A port is shared ground — another service,
+    or an older board, can be sitting on it, and every one of this plugin's guarantees breaks
+    quietly if we accept that as ours: hub_start would report already_running and never start,
+    hub_stop would claim to have stopped a process it does not own. Caught in testing, where the
+    port held an unrelated service and hub_status reported running: true.
+    """
     try:
         with urllib.request.urlopen(f"{LOCAL}/health", timeout=timeout) as r:
-            return json.loads(r.read().decode("utf-8"))
+            h = json.loads(r.read().decode("utf-8"))
     except Exception:
+        return None, None
+    return (h, None) if h.get("service") == SERVICE else (None, h)
+
+
+def _alive(timeout=2.0):
+    """Our board, answering — not merely something on the port."""
+    return _probe(timeout)[0]
+
+
+def _foreign():
+    """A stranger on the port, described well enough for a person to recognise it."""
+    other = _probe()[1]
+    if other is None:
         return None
+    return {"error": f"port {PORT} is answering, but it is not this board",
+            "it_replied": other,
+            "fix": "stop whatever owns that port, or set a different port in the plugin settings"}
 
 
 def _call(path, params=None, body=None, method="GET"):
@@ -93,10 +132,12 @@ def _call(path, params=None, body=None, method="GET"):
 @mcp.tool()
 def hub_status() -> dict:
     """Is the board actually running on this machine? Checked by asking it, not by assuming."""
-    h = _alive()
+    h, other = _probe()
     tok = _token()
     return {"running": h is not None,
             "health": h,
+            **({"warning": f"port {PORT} is held by something that is not this board",
+                "port_answered_with": other} if other else {}),
             "url_for_this_machine": LOCAL,
             "url_for_other_machines": f"http://<this machine's LAN address>:{PORT}",
             "data_dir": DATA_DIR,
@@ -113,6 +154,10 @@ def hub_start() -> dict:
     """
     if _alive():
         return {"already_running": True, **hub_status()}
+    busy = _foreign()
+    if busy:
+        # Starting anyway would bind-fail in a detached child whose log nobody reads.
+        return {"started": False, **busy}
     tok_path, pid_path, log_path = _paths()
     env = dict(os.environ, BOARD_DATA=DATA_DIR, BOARD_PORT=str(PORT), BOARD_HOST=HOST,
                PYTHONUTF8="1")
@@ -164,8 +209,14 @@ def hub_stop() -> dict:
         time.sleep(0.3)
         if not _alive(1.0):
             os.remove(pid_path)
-            return {"stopped": True, "verified": "port no longer answers"}
-    return {"stopped": False, "error": "signalled, but the port is still answering"}
+            out = {"stopped": True, "verified": "this board no longer answers"}
+            # Saying "the port is free" when a stranger still holds it would be a false claim
+            # about a thing the next hub_start depends on.
+            busy = _foreign()
+            if busy:
+                out["note"] = f"port {PORT} is still answering — but with {busy['it_replied']}"
+            return out
+    return {"stopped": False, "error": "signalled, but this board is still answering"}
 
 
 @mcp.tool()

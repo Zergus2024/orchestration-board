@@ -31,9 +31,14 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-BOARD = os.environ.get("BOARD_URL", "http://127.0.0.1:8781").rstrip("/")
-TOKEN = os.environ.get("BOARD_TOKEN", "")
-ME = os.environ.get("BOARD_NODE", "")
+def env(key, default=""):
+    """Absent and empty mean the same thing: an unfilled setting arrives as "", not as unset."""
+    return os.environ.get(key, "").strip() or default
+
+
+BOARD = env("BOARD_URL", "http://127.0.0.1:8781").rstrip("/")
+TOKEN = env("BOARD_TOKEN")
+ME = env("BOARD_NODE")
 
 sys.stdout.reconfigure(encoding="utf-8", line_buffering=True)
 

@@ -32,9 +32,19 @@ import urllib.request
 # running, and the two have different behaviour. Better to fail loudly on the wrong SDK.
 from mcp.server.mcpserver import MCPServer
 
-HUB = os.environ.get("BOARD_URL", "http://127.0.0.1:8781").rstrip("/")
-TOKEN = os.environ.get("BOARD_TOKEN", "")
-ME = os.environ.get("BOARD_NODE", "")
+
+def env(key, default=""):
+    """Absent and empty mean the same thing here.
+
+    A plugin setting the operator never filled in arrives as an empty string, not as an unset
+    variable, so os.environ.get(key, default) hands back "" and the default never applies.
+    """
+    return os.environ.get(key, "").strip() or default
+
+
+HUB = env("BOARD_URL", "http://127.0.0.1:8781").rstrip("/")
+TOKEN = env("BOARD_TOKEN")
+ME = env("BOARD_NODE")
 
 mcp = MCPServer(
     name="agentboard",
